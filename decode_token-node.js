@@ -2,11 +2,11 @@ const Shared = require('./shared-node');
 const SharedExtended = require('./shared_extended-node');
 
 module.exports = class OPAYGODecoder {
-  MAX_TOKEN_JUMP = 64;
-  MAX_TOKEN_JUMP_COUNTER_SYNC = 100;
-  MAX_UNUSED_OLDER_TOKENS = 8 * 2;
+  static MAX_TOKEN_JUMP = 64;
+  static MAX_TOKEN_JUMP_COUNTER_SYNC = 100;
+  static MAX_UNUSED_OLDER_TOKENS = 8 * 2;
 
-  getActivationValueCountAndTypeFromToken({
+  static getActivationValueCountAndTypeFromToken({
     token,
     startingCode,
     key,
@@ -58,7 +58,7 @@ module.exports = class OPAYGODecoder {
     return { value: null, count: null, type: null };
   }
 
-  #countIsValid({
+  static #countIsValid({
     count,
     lastCount,
     value,
@@ -82,7 +82,7 @@ module.exports = class OPAYGODecoder {
     return false;
   }
 
-  updateUsedCounts({
+  static updateUsedCounts({
     pastUsedCounts,
     value,
     newCount,
@@ -119,13 +119,13 @@ module.exports = class OPAYGODecoder {
     return usedCounts;
   }
 
-  #decodeBase(startingCodeBase, tokenBase) {
+  static #decodeBase(startingCodeBase, tokenBase) {
     const decodedValue = tokenBase - startingCodeBase;
 
     return decodedValue < 0 ? decodedValue + 1000 : decodedValue;
   }
 
-  getActivationValueCountFromExtendedToken({
+  static getActivationValueCountFromExtendedToken({
     token,
     startingCode,
     key,
@@ -158,7 +158,7 @@ module.exports = class OPAYGODecoder {
     return  { value, count: null };
   }
 
-  #decodeBaseExtended(startingCodeBase, tokenBase) {
+  static #decodeBaseExtended(startingCodeBase, tokenBase) {
     const decodedValue = tokenBase - startingCodeBase;
 
     return decodedValue < 0 ? decodedValue + 1000000 : decodedValue;

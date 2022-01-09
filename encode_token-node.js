@@ -2,7 +2,7 @@ const shared = require('./shared-node');
 const sharedExtended = require('./shared_extended-node');
 
 module.exports = class OPAYGOEncoder {
-  generateStandardToken({
+  static generateStandardToken({
     startingCode,
     key,
     value,
@@ -47,7 +47,7 @@ module.exports = class OPAYGOEncoder {
     return { newCount, finalToken };
   }
 
-  #encodeBase(base, number) {
+  static #encodeBase(base, number) {
     if ((number + base) > 999) {
       return number + base - 1000;
     } else {
@@ -55,7 +55,7 @@ module.exports = class OPAYGOEncoder {
     }
   }
 
-  generateExtendedToken({
+  static generateExtendedToken({
     startingCode,
     key,
     value,
@@ -83,7 +83,7 @@ module.exports = class OPAYGOEncoder {
     return { newCount, finalToken };
   }
 
-  #encodeBaseTokenExtended(base ,number) {
+  static #encodeBaseTokenExtended(base ,number) {
     if ((number + base) > 999999) {
       return number + base - 1000000;
     } else {

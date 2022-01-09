@@ -1,16 +1,12 @@
 const siphash = require('siphash');
 
-module.exports = class OPAYGOShared {
-  static MAX_BASE = 999
-  static MAX_ACTIVATION_VALUE = 995
-  static PAYG_DISABLE_VALUE = 998
-  static COUNTER_SYNC_VALUE = 999
-  static TOKEN_VALUE_OFFSET = 1000
-  static TOKEN_TYPE_SET_TIME = 1
-  static TOKEN_TYPE_ADD_TIME = 2
+module.exports = class OPAYGOSharedExtended {
+  static MAX_BASE = 999999
+  static MAX_ACTIVATION_VALUE = 999999
+  static TOKEN_VALUE_OFFSET_EXTENDED = 1000000
 
   static getTokenBase(code) {
-    return Number(code) % this.TOKEN_VALUE_OFFSET; 
+    return Number(code) % this.TOKEN_VALUE_OFFSET_EXTENDED;
   }
 
   static putBaseInToken(token, tokenBase) {
@@ -22,45 +18,42 @@ module.exports = class OPAYGOShared {
   }
 
   static generateNextToken(lastCode, key) {
-    // TODO: do the right thing
+    // TODO: learn how siphash works and really understand the token
   }
 
-  static #convertHashToToken() {
-    // TODO: do the right thing
+  static #convertHashToToken(hash) {
   }
 
-  static #convertTo295bits(source) {
-    const mask = ((1 << (32 - 2 + 1)) - 1) << 2;
-    let temp = (source & mask) >> 2
+  static #convertTo40Bits(source) {
+    const mask = ((1 << (64 - 24 + 1)) - 1) << 24;
+    let temp = (source & mask) >> 24;
 
-    if (temp > 999999999) {
-      temp = temp - 73741825;
+    if (temp > 999999999999) {
+      temp = temp - 99511627777;
     }
 
     return temp;
-  } 
+  }
 
   static convertTo4DigitToken(source) {
     let restrictedDigitToken = '';
-    const bitArray = this.#bitArrayFromInt(source, 30);
+    const bitArray = this.#bitArrayFromInt(source, 40);
 
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0 ; i < 20; i++) {
       const idx = i * 2;
       const thisArray = bitArray.slice(idx, idx + 2);
-
       restrictedDigitToken += String(this.#bitArrayToInt(thisArray) + 1);
     }
 
-    return restrictedDigitToken;
+    return Number(restrictedDigitToken);
   }
 
   static convertFrom4DigitToken(source) {
     let bitArray = [];
-
     for (const charDigit of String(source)) {
       const digit = Number(charDigit) - 1;
-      const thisArray = this.#bitArrayFromInt(digit, 2);
-      bitArray.concat(thisArray);
+      const arr = this.#bitArrayFromInt(digit, 2)
+      bitArray.concat(arr);
     }
 
     return this.#bitArrayToInt(bitArray);
@@ -69,16 +62,15 @@ module.exports = class OPAYGOShared {
   static #bitArrayToInt(bitArray) {
     let i = 0;
     for (const bit of bitArray) {
-      i = (i << 1) | bit;
+      i = (i << 1) | bit
     }
-
     return i;
   }
 
-  static #bitArrayFromInt(source, bits) {
+  static #bitArrayFromInt(source, numBits) {
     let bitArray = [];
 
-    for (let i = 0; i < bits.length; i++) {
+    for (let i = 0; i < numBits; i++) {
       bitArray.push(Boolean(source & (1 << (bits - 1 - i))));
     }
 
